@@ -3,7 +3,7 @@
 
 <Divider />
 
-<AntDesign.Input TValue="string" Class="components-overview-search" Placeholder="@LanguageService.Resources["app.components.overview.search"]" OnInput="@(args => OnSearchEnter(args.Value?.ToString()))">
+<AntDesign.Input TValue="string" Class="components-overview-search" Placeholder="@LanguageService["app.components.overview.search"]" OnInput="@(args => OnSearchEnter(args.Value?.ToString()))">
     <Suffix>
         <Icon Type="search" />
     </Suffix>

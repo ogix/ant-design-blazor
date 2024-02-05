@@ -1,39 +1,46 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components;
 
 namespace AntDesign.Docs.Localization
 {
     public class InAssemblyLanguageService : ILanguageService
     {
         private readonly Assembly _resourcesAssembly;
+        private readonly string _resourceDirectionary;
+        private Resources _resources;
 
-        public InAssemblyLanguageService(Assembly assembly, CultureInfo culture)
+        public InAssemblyLanguageService(Assembly assembly, CultureInfo culture, string resourceDirectionary = "Resources")
         {
             _resourcesAssembly = assembly;
             SetDefaultLanguage(culture);
+            _resourceDirectionary = resourceDirectionary;
         }
 
-        public InAssemblyLanguageService(Assembly assembly)
+        public InAssemblyLanguageService(Assembly assembly, string resourceDirectionary = "Resources")
         {
             _resourcesAssembly = assembly;
             SetDefaultLanguage(CultureInfo.CurrentCulture);
+            _resourceDirectionary = resourceDirectionary;
         }
 
         public CultureInfo CurrentCulture { get; private set; }
 
-        public Resources Resources { get; private set; }
-
         public event EventHandler<CultureInfo> LanguageChanged;
+
+        public string this[string key] => _resources[key];
 
         private void SetDefaultLanguage(CultureInfo culture)
         {
             var availableResources = _resourcesAssembly
                 .GetManifestResourceNames()
-                .Select(x => Regex.Match(x, @"^.*Resources\.(.+)\.json"))
+                .Select(x => Regex.Match(x, $@"^.*{_resourceDirectionary.Replace('/', '.').Replace('\\', '.')}\.(.+)\.json"))
                 .Where(x => x.Success)
                 .Select(x => (CultureName: x.Groups[1].Value, ResourceName: x.Value))
                 .ToList();
@@ -51,9 +58,9 @@ namespace AntDesign.Docs.Localization
             CultureInfo.DefaultThreadCurrentUICulture = culture;
 
             CurrentCulture = culture;
-            Resources = GetKeysFromCulture(culture.Name, resourceName);
+            _resources = GetKeysFromCulture(culture.Name, resourceName);
 
-            if (Resources == null)
+            if (_resources == null)
                 throw new FileNotFoundException($"There is no language files existing in the Resource folder within '{_resourcesAssembly.GetName().Name}' assembly");
         }
 
@@ -72,9 +79,9 @@ namespace AntDesign.Docs.Localization
 
                 string fileName = $"{_resourcesAssembly.GetName().Name}.Resources.{culture.Name}.json";
 
-                Resources = GetKeysFromCulture(culture.Name, fileName);
+                _resources = GetKeysFromCulture(culture.Name, fileName);
 
-                if (Resources == null)
+                if (_resources == null)
                     throw new FileNotFoundException($"There is no language files for '{culture.Name}' existing in the Resources folder within '{_resourcesAssembly.GetName().Name}' assembly");
 
                 LanguageChanged?.Invoke(this, culture);

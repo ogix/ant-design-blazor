@@ -14,7 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<RouteManager>();
             services.AddScoped<DemoService>();
             services.AddScoped<IconListService>();
-            services.AddSingleton<ILanguageService>(new InAssemblyLanguageService(Assembly.GetExecutingAssembly()));
+            services.AddScoped<ILanguageService>(sp => new InAssemblyLanguageService(Assembly.GetExecutingAssembly()));
             services.AddScoped<IPrismHighlighter, PrismHighlighter>();
 
             return services;

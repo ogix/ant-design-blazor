@@ -28,7 +28,7 @@ namespace AntDesign.Docs.Shared
         {
             _colorHex = args.Value.ToString();
 
-            await Message.Loading(Language.Resources["app.footer.primary-color-changing"]);
+            await Message.Loading(Language["app.footer.primary-color-changing"]);
 
             await JS.InvokeVoidAsync("changeColor", _colorHex, DotNetObjectReference.Create(this));
         }
@@ -36,7 +36,7 @@ namespace AntDesign.Docs.Shared
         [JSInvokable]
         public void OnColorChanged()
         {
-            Message.Success(Language.Resources["app.footer.primary-color-changed"]);
+            Message.Success(Language["app.footer.primary-color-changed"]);
         }
     }
 }

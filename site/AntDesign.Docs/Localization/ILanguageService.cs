@@ -7,10 +7,10 @@ namespace AntDesign.Docs.Localization
     {
         CultureInfo CurrentCulture { get; }
 
-        Resources Resources { get; }
-
         event EventHandler<CultureInfo> LanguageChanged;
 
         void SetLanguage(CultureInfo culture);
+
+        string this[string key] { get; }
     }
 }
