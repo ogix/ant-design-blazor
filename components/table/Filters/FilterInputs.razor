@@ -1,6 +1,7 @@
 ﻿@namespace AntDesign.Filters
 
 @using AntDesign
+@using AntDesign.Core.Helpers
 
 @implements IHandleEvent
 
@@ -24,12 +25,12 @@
                 @if (filter.FilterCompareOperator != TableFilterCompareOperator.TheSameDateWith) {
                     <DatePicker Value="(DateTime?)filter.Value" ShowTime="true"
                                 TValue="DateTime?" ValueChanged="value => filter.Value = value?.AddMilliseconds(-value.Value.Millisecond)"
-                                PopupContainerSelector="@filter.PopupContainerSelector"
+                                @attributes="filter.Attributes"
                                 BoundaryAdjustMode="@TriggerBoundaryAdjustMode.None"/>
                 }
                 else {
                     <DatePicker Value="(DateTime?)filter.Value" TValue="DateTime?" ValueChanged="value => filter.Value = value"
-                                PopupContainerSelector="@filter.PopupContainerSelector"
+                                @attributes="filter.Attributes"
                                 BoundaryAdjustMode="@TriggerBoundaryAdjustMode.None"/>
                 }
              </text>;
@@ -41,20 +42,14 @@
         @<text>
             <EnumSelect TEnum="TData" Mode="multiple"
                         @*Values="EnumHelper<TData>.Split(filter.Value)" workaround for https: //github.com/ant-design-blazor/ant-design-blazor/issues/3006 *@
-            PopupContainerSelector="@filter.PopupContainerSelector"
+            @attributes="filter.Attributes"
             Style="width:180px;"
             ValuesChanged="value => filter.Value = EnumHelper<TData>.Combine(value)"
             BoundaryAdjustMode="@TriggerBoundaryAdjustMode.None" />
          </text>;
 
     public RenderFragment<TableFilterInputRenderOptions> GetNumberInput<TData>() where TData : struct => filter =>
-        @<InputNumber Value="(TData?)filter.Value" Formatter="number => NumberFormatter(number, filter.Format)" TValue="TData?" ValueChanged="value => filter.Value = value" @ref="@filter.InputRef" />;
-
-    private string NumberFormatter(object value, string format)
-    {
-        if (value == null) return null;
-        return Convert.ToDouble(value).ToString(format);
-    }
+        @<InputNumber Value="(TData?)filter.Value" Formatter="@((Func<TData?,string>)(number => Formatter<TData?>.Format(number, filter.Attributes["Format"]?.ToString())))" TValue="TData?" ValueChanged="value => filter.Value = value" @ref="@filter.InputRef" />;
 
     public RenderFragment<TableFilterInputRenderOptions> GetInput<TData>() => filter =>
         @<Input TValue="TData" Value="(TData)filter.Value" ValueChanged="value => filter.Value = value" @ref="@filter.InputRef" />;

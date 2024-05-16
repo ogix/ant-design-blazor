@@ -325,7 +325,7 @@ else if (IsBody && RowSpan != 0 && ColSpan != 0)
                         @if (!noInput)
                         {
                             <SpaceItem>
-                                @_fieldFilterType.FilterInput(new TableFilterInputRenderOptions(filter, "#popup-container-for-" + Id, Format, Expression.Field(Expression.Constant(this), nameof(_filterInputRef))))
+                                @_fieldFilterType.FilterInput(new TableFilterInputRenderOptions(filter, new(){ ["PopupContainerSelector"]="#popup-container-for-" + Id,["Format"]=Format  }, ()=>_filterInputRef))
                             </SpaceItem>
                         }
                         @if (filterCount > 1)
