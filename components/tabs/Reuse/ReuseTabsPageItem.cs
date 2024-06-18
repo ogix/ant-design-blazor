@@ -22,5 +22,7 @@ namespace AntDesign
         public bool KeepAlive { get; set; } = true;
 
         public int Order { get; set; } = 9999;
+
+        internal bool Rendered { get; set; }
     }
 }

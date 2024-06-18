@@ -205,6 +205,22 @@ namespace AntDesign
             OnStateHasChanged?.Invoke();
         }
 
+        internal void TryAddPage(RenderFragment body)
+        {
+            var reuseTabsPageItem = _pageMap.ContainsKey(CurrentUrl) ? _pageMap[CurrentUrl] : null;
+            if (reuseTabsPageItem == null)
+            {
+                reuseTabsPageItem = new ReuseTabsPageItem
+                {
+                    Url = CurrentUrl,
+                    CreatedAt = DateTime.Now,
+                    Body = body
+                };
+                AddPage(CurrentUrl, reuseTabsPageItem);
+            }
+            OnStateHasChanged?.Invoke();
+        }
+
         private static RenderFragment CreateBody(RouteData routeData, ReuseTabsPageItem item)
         {
             return builder =>

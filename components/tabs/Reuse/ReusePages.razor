@@ -5,7 +5,7 @@
 
 @namespace AntDesign
 @using Microsoft.AspNetCore.Components.Routing
-
+@using AntDesign.Internal.Components
 
 <CascadingValue Name="AntDesign.InReusePageContent" Value="true" IsFixed>
     @if (ReuseTabsService.Pages?.Any() == true)
@@ -13,7 +13,9 @@
         @foreach (var item in ReuseTabsService.Pages)
         {
             <div class="ant-reuse-tabs-content @Class" @key="item.Url" style="@(item.Url == ReuseTabsService.CurrentUrl? "": "display:none;") @Style">
-                @item.Body
+                <RenderControl CanRender="!item.Rendered" AfterRender="()=> { item.Rendered = true; }">
+                    @ChildContent
+                </RenderControl>
             </div>
         }
     }
@@ -41,6 +43,9 @@
     [Parameter]
 
     public EventCallback<string> ActivedUriChanged { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
 
     protected override void OnInitialized()
     {
